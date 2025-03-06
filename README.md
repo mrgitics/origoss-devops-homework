@@ -56,3 +56,18 @@ Developed by **Andor Margitics** ([GitHub: mrgitics](https://github.com/mrgitics
 - **Image**: `mrgitics/hello-world-server:v1.0`
 - **Note**: To use your own image, run Task 3’s CI with your `DOCKER_USERNAME` and `DOCKER_PASSWORD` (PAT), then update `image` to `<your-username>/hello-world-server:v1.0`.
 - **Verify**: `curl <minikube-service-url>` returns `"Hello, World!"`
+
+## Task 5: Terraform Deployment
+- **Goal**: Use Terraform to deploy the HTTP server to Minikube.
+- **File**: `terraform/main.tf`
+- **Platform**: Minikube
+- **Description**: Deploys the HTTP server with 2 replicas and a NodePort Service using the Terraform Kubernetes provider (resources named `hello-world-server-tf` and `hello-world-service-tf` to distinguish from Task 4).
+- **Deployment Steps**:
+  - Start Minikube: `minikube start`
+  - Navigate to Terraform dir: `cd terraform`
+  - Initialize: `terraform init`
+  - Apply: `terraform apply` (type `yes` to confirm)
+  - Check: `kubectl get deployments` (expect `hello-world-server-tf` 2/2 ready) and `kubectl get pods`
+  - Access: `minikube service hello-world-service-tf --url` (e.g., `curl http://127.0.0.1:38047`)
+- **Image**: `mrgitics/hello-world-server:v1.0`
+- **Verify**: `curl <minikube-service-url>` returns `"Hello, World!"` from either pod
