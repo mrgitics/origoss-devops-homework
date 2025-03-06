@@ -26,4 +26,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: mrgitics/hello-world-server:${{ github.ref_name }}
+          tags: ${{ vars.DOCKER_USERNAME }}/hello-world-server:${{ github.ref_name }}
