@@ -1,5 +1,18 @@
 # Origoss DevOps Homework
 
+Developed by **Andor Margitics** ([GitHub: mrgitics](https://github.com/mrgitics)) for the Origoss DevOps Homework.
+
+## Prerequisites
+- **Note**: These instructions assume a Linux environment. For Windows, use WSL2 with a Linux distro.
+- **Go**: make sure Go installed.
+- **Docker**: make sure Docker installed.
+- **Minikube**: Install with `curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && sudo install minikube-linux-amd64 /usr/local/bin/minikube`.
+- **kubectl**: Install with `curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install kubectl /usr/local/bin/kubectl`.
+
+## Cluster Provisioning (for Task 4)
+- Start Minikube: `minikube start`
+- Verify: `kubectl get nodes`
+
 ## Task 1: Simple HTTP Server
 - **File**: `src/main.go`
 - **Language**: Go (preferred by Origoss)
@@ -15,7 +28,7 @@
 - **Test**: `curl http://localhost:8080`
 
 ## Task 3: CI Pipeline
-- **Goal**: Build and push the Docker image to a registry (per exercise 3).
+- **Goal**: Build and push the Docker image to a registry.
 - **File**: `.github/workflows/ci.yaml`
 - **Platform**: GitHub Actions
 - **Registry**: Docker Hub
@@ -23,9 +36,23 @@
 - **Setup**:
   - In your GitHub repo, go to **Settings > Secrets and variables > Actions > New repository secret(password)-New repository variable(username).
   - Add these secrets:
-    - `DOCKER_USERNAME`: Your Docker Hub username (e.g., `mrgitics`).
-    - `DOCKER_PASSWORD`: Your Docker Hub password or Personal Access Token (PAT).
-  - The workflow uses `${{ vars.DOCKER_USERNAME }}` to dynamically set the Docker Hub username in the image tag.
+    - `DOCKER_USERNAME`: Your Docker Hub username.
+    - `DOCKER_PASSWORD`: Your Docker Hub Personal Access Token (PAT).
 - **Trigger**: `git tag v1.0 && git push origin v1.0`
 - **Image**: `<your-username>/hello-world-server:v1.0`
 - **Verify**: `docker pull <your-username>/hello-world-server:v1.0`
+
+## Task 4: Kubernetes Deployment
+- **Goal**: Deploy the HTTP server to a Kubernetes cluster.
+- **File**: `kubernetes/deployment.yaml`
+- **Platform**: Minikube
+- **Description**: Deploys the HTTP server with 2 replicas using a Deployment with rolling updates and a NodePort Service.
+- **Deployment Steps**:
+  - Apply: `kubectl apply -f kubernetes/deployment.yaml`
+  - Check: `kubectl get deployments` (expect 2/2 ready) and `kubectl get pods` (expect 2 pods)
+  - Access: `minikube service hello-world-service --url`
+  - Note: Keep the terminal open when using `minikube service --url` with the Docker driver on Linux.
+  - Update Version: Edit `image` in `deployment.yaml` (e.g., `mrgitics/hello-world-server:v1.1`), then `kubectl apply -f kubernetes/deployment.yaml`
+- **Image**: `mrgitics/hello-world-server:v1.0`
+- **Note**: To use your own image, run Task 3’s CI with your `DOCKER_USERNAME` and `DOCKER_PASSWORD` (PAT), then update `image` to `<your-username>/hello-world-server:v1.0`.
+- **Verify**: `curl <minikube-service-url>` returns `"Hello, World!"`
