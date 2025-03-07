@@ -1,8 +1,9 @@
 #!/bin/bash
+set -e
 echo "Running Task 4: Kubernetes Deployment"
 
 SCRIPT_DIR="$(dirname "$0")"
-cd "$SCRIPT_DIR/.." || exit 1
+cd "$SCRIPT_DIR/.."
 
 minikube start
 echo "Applying Kubernetes resources..."
