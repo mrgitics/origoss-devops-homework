@@ -1,6 +1,6 @@
 # Origoss DevOps Homework
 
-Developed by **Andor Margitics** ([GitHub: mrgitics](https://github.com/mrgitics)) for the Origoss DevOps Homework.
+Developed by **Andor Margitics** ([GitHub: mrgitics](https://github.com/mrgitics))
 
 ## Prerequisites
 - **Note**: These instructions assume a Linux environment. For Windows, use WSL2 with a Linux distro.
@@ -17,15 +17,15 @@ Developed by **Andor Margitics** ([GitHub: mrgitics](https://github.com/mrgitics
 - **File**: `src/main.go`
 - **Language**: Go (preferred by Origoss)
 - **Description**: Responds with "Hello, World!" at `/` on port 8080.
-- **Run**: `go run src/main.go`
-- **Test**: `curl http://localhost:8080`
+- **Run**: `./scripts/run_task1.sh`
+- **Verify**: Script outputs `"Hello, World!"` via `curl`
 
 ## Task 2: Dockerize the HTTP Server
 - **File**: `Dockerfile`
 - **Description**: Multi-stage build using `golang:1.24.1` and `scratch` for a lightweight image.
 - **Build**: `docker build -t hello-world-server .`
-- **Run**: `docker run -p 8080:8080 hello-world-server`
-- **Test**: `curl http://localhost:8080`
+- **Run**: `./scripts/run_task2.sh`
+- **Verify**: Script outputs `"Hello, World!"` via `curl`
 
 ## Task 3: CI Pipeline
 - **Goal**: Build and push the Docker image to a registry.
@@ -46,28 +46,23 @@ Developed by **Andor Margitics** ([GitHub: mrgitics](https://github.com/mrgitics
 - **Goal**: Deploy the HTTP server to a Kubernetes cluster.
 - **File**: `kubernetes/deployment.yaml`
 - **Platform**: Minikube
-- **Description**: Deploys the HTTP server with 2 replicas using a Deployment with rolling updates and a NodePort Service.
-- **Deployment Steps**:
-  - Apply: `kubectl apply -f kubernetes/deployment.yaml`
-  - Check: `kubectl get deployments` (expect 2/2 ready) and `kubectl get pods` (expect 2 pods)
-  - Access: `minikube service hello-world-service --url`
-  - Note: Keep the terminal open when using `minikube service --url` with the Docker driver on Linux.
-  - Update Version: Edit `image` in `deployment.yaml` (e.g., `mrgitics/hello-world-server:v1.1`), then `kubectl apply -f kubernetes/deployment.yaml`
+- **Description**: Deploys the HTTP server with 2 replicas using a Deployment and a NodePort Service.
+- **Run**: `./scripts/run_task4.sh`
 - **Image**: `mrgitics/hello-world-server:v1.0`
-- **Note**: To use your own image, run Task 3’s CI with your `DOCKER_USERNAME` and `DOCKER_PASSWORD` (PAT), then update `image` to `<your-username>/hello-world-server:v1.0`.
-- **Verify**: `curl <minikube-service-url>` returns `"Hello, World!"`
+- **Verify**: Script outputs the NodePort URL (e.g., `http://127.0.0.1:XXXXX`) and `"Hello, World!"` via `curl`
 
 ## Task 5: Terraform Deployment
 - **Goal**: Use Terraform to deploy the HTTP server to Minikube.
 - **File**: `terraform/main.tf`
 - **Platform**: Minikube
 - **Description**: Deploys the HTTP server with 2 replicas and a NodePort Service using the Terraform Kubernetes provider (resources named `hello-world-server-tf` and `hello-world-service-tf` to distinguish from Task 4).
-- **Deployment Steps**:
-  - Start Minikube: `minikube start`
-  - Navigate to Terraform dir: `cd terraform`
-  - Initialize: `terraform init`
-  - Apply: `terraform apply` (type `yes` to confirm)
-  - Check: `kubectl get deployments` (expect `hello-world-server-tf` 2/2 ready) and `kubectl get pods`
-  - Access: `minikube service hello-world-service-tf --url` (e.g., `curl http://127.0.0.1:38047`)
+- **Run**: `./scripts/run_task5.sh`
 - **Image**: `mrgitics/hello-world-server:v1.0`
-- **Verify**: `curl <minikube-service-url>` returns `"Hello, World!"` from either pod
+- **Verify**: Script outputs the NodePort URL (e.g., `http://127.0.0.1:XXXXX`) and `"Hello, World!"` via `curl`
+
+## Cleanup
+- **Script**: `./scripts/cleanup.sh`
+- **Description**: Removes all resources created by Tasks 2, 4, and 5:
+  - Task 2: Stops and removes the Docker container.
+  - Task 4: Deletes Kubernetes deployment and service.
+  - Task 5: Destroys Terraform-managed resources.
